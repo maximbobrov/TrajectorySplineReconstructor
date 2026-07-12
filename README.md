@@ -2,6 +2,12 @@
 
 TrajectorySplineReconstructor is an interactive C++/OpenGL tool for reconstructing smooth three-dimensional particle trajectories from discrete time-step files. The name reflects the full workflow: measured particle tracks are assembled into trajectories, each trajectory is reconstructed with cubic B-splines, and analytic velocity and acceleration are derived from the reconstructed curves.
 
+<img width="1918" height="1030" alt="image" src="https://github.com/user-attachments/assets/ed8eee32-3dcb-4b76-b962-7775da62654e" />
+<img width="1919" height="1032" alt="image" src="https://github.com/user-attachments/assets/9e8a5612-687d-4180-8a4f-236967301b40" />
+
+
+
+
 ## Input Data
 
 Place a data directory named `DA_ppp_0_005` next to the executable or run the executable from a working directory that contains that folder.
