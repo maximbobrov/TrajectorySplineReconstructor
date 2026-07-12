@@ -1,38 +1,34 @@
 #include "globals.h"
 
-int clear_w = 1.0;
+int mouseDownX, mouseDownY;
+bool isRotating = false;
+float rotationX0 = 0.0;
+float rotationY0 = 0.0;
+float rotationX = rotationX0;
+float rotationY = rotationY0;
+double mouseX, mouseY;
+bool autoRedraw = false;
+double displayScale = 500.0;
+double viewX = 14.507903;
+double viewY = 8.300000;
+double viewZ = 24.2;
+double forwardX = 0.0;
+double forwardY = 0.0;
+double forwardZ = 0.0;
 
-int mx0,my0;
-int rotate = 0;
-float rx0 = 0.0;
-float ry0 = 0.0;
-float rx = rx0;
-float ry = ry0;
-double mouse_x,mouse_y;
-int redr=0;
-double ck=0.1;
-double scale  = 500.0;
-double view_x=14.507903;
-double view_y=8.300000;
-double view_z=24.2;
-double o_x=0.0;
-double o_y=0.0;
-double o_z=0.0;
-
-int iNum = NX-1;
-int jNum = NY-1;
-int kNum = NZ-1;
+int displayMaxI = GRID_NX - 1;
+int displayMaxJ = GRID_NY - 1;
+int displayMaxK = GRID_NZ - 1;
 int currTime = 1;
-int itn=0;
-int kCur= 0;
-double sc=1;
-double cv=0.001;
+double zoomScale = 1;
+
 double xmin = 1e10;
 double xmax = -1e10;
 double ymin = 1e10;
 double ymax = -1e10;
 double zmin = 1e10;
 double zmax = -1e10;
+
 bool drawPoint = true;
 bool drawLineSeg = false;
 bool drawSpline = true;
@@ -53,7 +49,4 @@ double maxPressure = -1e100;
 
 bool rangeCalculated = false;
 
-int isNoOptimized[THREADNUM];
-
-
-
+int isNoOptimized[THREAD_COUNT];

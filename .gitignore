@@ -1,0 +1,10 @@
+DA_ppp_0_005/
+splineInterpolation/.qmake.stash
+splineInterpolation/Makefile
+splineInterpolation/Makefile.Debug
+splineInterpolation/Makefile.Release
+splineInterpolation/debug/
+splineInterpolation/release/
+splineInterpolation/*.obj
+splineInterpolation/*.pdb
+splineInterpolation/*.ilk

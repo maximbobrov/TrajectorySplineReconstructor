@@ -1,54 +1,62 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+// Windows.h defines min/max macros that clash with std::min/std::max used
+// throughout this project (e.g. tools.cpp, main.cpp) -- NOMINMAX suppresses them.
+#define NOMINMAX
+// M_PI is not defined by <math.h> on MSVC unless this is defined first.
+#define _USE_MATH_DEFINES
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <my_include/gl.h>
-#include <my_include/glu.h>
-#include <my_include/glut.h>
-#include  <math.h>
-#include <time.h>
+#include <windows.h>
+#include "my_include/gl.h"
+#include "my_include/glu.h"
+#include "my_include/glut.h"
+#include <math.h>
+#include <chrono>
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <fstream>
-#include "dirent.h"
 #include <thread>
-#include <sys/time.h>
 
+// grid resolution of the (r,z,phi)-like Cartesian field grid used by the
+// (currently unreachable, see README "Notes") grid-interpolation/pressure-solve code path
+constexpr int GRID_NX = 251;
+constexpr int GRID_NY = 126;
+constexpr int GRID_NZ = 76;
 
-#define W_WIDTH 1600
-#define W_HEIGHT 1300
-#define NX 251
-#define NY 126
-#define NZ 76
+// resolution of the spatial hash grid used to find nearest-neighbour tracked particles
+constexpr int NUM_GRID_CELLS = 20;
 
+constexpr int WINDOW_WIDTH = 1600;
+constexpr int WINDOW_HEIGHT = 1300;
 
-#define NUMCELLS 20
+// physical domain bounds covered by the field grid, meters
+constexpr double DOMAIN_X_MIN = 1.75;
+constexpr double DOMAIN_X_MAX = 6.75;
+constexpr double DOMAIN_Y_MIN = -1.25;
+constexpr double DOMAIN_Y_MAX = 1.25;
+constexpr double DOMAIN_Z_MIN = 0.04;
+constexpr double DOMAIN_Z_MAX = 1.0;
 
+constexpr double CELL_SIZE_X = (DOMAIN_X_MAX - DOMAIN_X_MIN) * 1.0 / GRID_NX;
+constexpr double CELL_SIZE_Y = (DOMAIN_Y_MAX - DOMAIN_Y_MIN) * 1.0 / GRID_NY;
+constexpr double CELL_SIZE_Z = (DOMAIN_Z_MAX - DOMAIN_Z_MIN) * 1.0 / GRID_NZ;
 
-#define x0_ 1.75//-2.5//-50
-#define x1_ 6.75//2.5//50
-#define y0_ -1.25//-25
-#define y1_ 1.25//25
-#define z0_ 0.04//0.01
-#define z1_ 1.0//30.01
+constexpr int THREAD_COUNT = 16; // number of worker threads used by the 'v' full-optimization command
 
-#define dx ((x1_-x0_) * 1.0 / NX)
-#define dy ((y1_-y0_) * 1.0 / NY)
-#define dz ((z1_-z0_) * 1.0 / NZ)
-
-
-#define THREADNUM 16
-#define PATH "DA_ppp_0_005/"//"E:/projects/splineViewer/ActiveLongTracks50.txt"//"dns_data/"//"DA_ppp_0_025/"//"E:/projects/splineViewer/0.080ppp.txt"//"DA_ppp_0_160/"//"NoisyTracks/"//"ExactTracks/"//"NoisyTracks/"//"ExactTracks/"//"NoisyTracks/"//"ExactTracks/"//"NoisyTracks/"//"E:/projects/splineViewer/ActiveLongTracks50_0.080ppp_best.txt"
-//"ExactTracks/"//"E:/projects/splineViewer/ActiveLongTracks50_0.050ppp_best.txt"
-//"DA_ppp_0_025/""DA_ppp_0_160/"//"DA_ppp_0_005/""test/""testNoise10x/""testNoise100x/"
+// folder (relative to the working directory) scanned for input ".dat" track files
+constexpr const char* DATA_DIRECTORY = "DA_ppp_0_005/";
 
 using namespace std;
 
-struct posVelAccel
+// per-particle sample used for the "current time step" snapshot drawn on screen
+struct ParticleState
 {
-    posVelAccel(double ix, double iy, double iz, double iu, double iv, double iw, double iax, double iay, double iaz)
+    ParticleState(double ix, double iy, double iz, double iu, double iv, double iw, double iax, double iay, double iaz)
         : x(ix), y(iy), z(iz), u(iu), v(iv), w(iw), ax(iax), ay(iay), az(iaz) {}
     double x, y, z;
     double u, v, w;
@@ -60,47 +68,43 @@ struct posVelAccel
     int boundType = -1;
 };
 
-extern int clear_w;
+// ---- view / camera state (see splineViewer.cpp: onMouseMotion, onMouseButton, onKeyboard) ----
+extern int mouseDownX, mouseDownY; // mouse position latched on button-down, for drag deltas
+extern bool isRotating;            // true while the left mouse button is held and dragged
+extern float rotationX0, rotationY0; // rotation angles latched on button-down
+extern float rotationX, rotationY;   // current view rotation angles (updated by dragging)
+extern double mouseX, mouseY;        // last mouse position in normalized [0,1] window coordinates
+extern bool autoRedraw;              // toggled by Space: keep calling glutPostRedisplay every frame
+extern double displayScale;          // color/vector-length multiplier, keys '[' and ']'
+extern double viewX, viewY, viewZ;   // camera position
+extern double forwardX, forwardY, forwardZ; // camera forward (look) direction, unit vector
 
-extern int mx0,my0;
-extern int rotate;
-extern float rx0;
-extern float ry0;
-extern float rx;
-extern float ry;
-extern double mouse_x,mouse_y;
-extern int redr;
-extern double ck;
-extern double scale;
-extern double view_x;
-extern double view_y;
-extern double view_z;
-extern double o_x;
-extern double o_y;
-extern double o_z;
+extern int displayMaxI; // upper index bound when drawing the field grid (keys 'i'/'o')
+extern int displayMaxJ; // upper index bound when drawing the field grid (keys 'k'/'l')
+extern int displayMaxK; // upper index bound when drawing the field grid (keys ','/'.')
+extern int currTime;    // currently displayed time step (0-based file index), keys '9'/'0'
+extern double zoomScale; // scene scale factor applied in onDisplay (glScalef)
 
-extern int iNum;
-extern int jNum;
-extern int kNum;
-extern int currTime;
-extern int itn;
-extern int kCur;
-extern double sc;
-extern double cv;
+#define iNum displayMaxI
+#define jNum displayMaxJ
+#define kNum displayMaxK
+#define sc zoomScale
+
 extern double xmin;
 extern double xmax;
 extern double ymin;
 extern double ymax;
 extern double zmin;
 extern double zmax;
-extern bool drawPoint;
-extern bool drawLineSeg;
-extern bool drawSpline;
-extern bool drawVelocity;
-extern bool drawAcceleration;
-extern bool drawGridVel;
-extern bool drawGridAccel;
-extern bool drawGridPressure;
+
+extern bool drawPoint;         // key '1': draw current-time particle positions
+extern bool drawLineSeg;       // key '2': draw raw per-track polylines
+extern bool drawSpline;        // key '3': draw fitted splines, colored by speed
+extern bool drawVelocity;      // key '4' (see README "Notes": currently has no visible effect)
+extern bool drawAcceleration;  // key '5': draw per-track acceleration vectors
+extern bool drawGridVel;       // grid velocity-field overlay (see README "Notes": currently unreachable)
+extern bool drawGridAccel;     // grid acceleration-field overlay (see README "Notes": currently unreachable)
+extern bool drawGridPressure;  // grid pressure-field overlay (see README "Notes": currently unreachable)
 
 extern double minVel;
 extern double maxVel;
@@ -108,13 +112,11 @@ extern double maxVel;
 extern double minAccel;
 extern double maxAccel;
 
-
 extern double minPressure;
 extern double maxPressure;
 
-extern bool rangeCalculated;
+extern bool rangeCalculated; // true once the min/max color-scale ranges have been computed once
 
-extern int isNoOptimized[THREADNUM];
-
+extern int isNoOptimized[THREAD_COUNT]; // per-thread "still improving" flag used by the 'v' command
 
 #endif // GLOBALS_H

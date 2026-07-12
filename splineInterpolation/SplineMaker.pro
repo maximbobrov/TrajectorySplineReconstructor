@@ -1,8 +1,8 @@
 TEMPLATE = app
-CONFIG += console c++11
+TARGET = SplineMaker
+CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
-CONFIG += c++11
 LIBS += -lopenGL32 -lGLU32
 SOURCES += \
         fileloader.cpp \
@@ -11,15 +11,7 @@ SOURCES += \
         main.cpp \
         splineinterpolator.cpp \
         tools.cpp
-#QMAKE_CXXFLAGS_RELEASE += -O3 -ffast-math  -msse -std=c++11
-QMAKE_CXXFLAGS_RELEASE += -O3
-
-#QMAKE_LFLAGS += -O3 -ffast-math  -msse -std=c++11
-QMAKE_LFLAGS += -O3
-
-
-LIBS += -lopenGL32 -lGLU32 -lm
-LIBS += -L$$PWD/my_lib -lglut32
+LIBS += my_lib/glut32.lib
 
 HEADERS += \
     fileloader.h \
