@@ -1,6 +1,6 @@
-# SplineMaker
+# TrajectorySplineReconstructor
 
-SplineMaker is an interactive C++/OpenGL tool for reconstructing smooth three-dimensional particle trajectories from discrete time-step files. It groups measurements by particle id, fits independent cubic B-splines for `x(t)`, `y(t)`, and `z(t)`, and evaluates analytic velocity and acceleration from spline derivatives.
+TrajectorySplineReconstructor is an interactive C++/OpenGL tool for reconstructing smooth three-dimensional particle trajectories from discrete time-step files. The name reflects the full workflow: measured particle tracks are assembled into trajectories, each trajectory is reconstructed with cubic B-splines, and analytic velocity and acceleration are derived from the reconstructed curves.
 
 ## Input Data
 
@@ -22,7 +22,7 @@ where `t_k` is the file index in the sorted sequence.
 
 ## Trajectory Model
 
-For every coordinate component, SplineMaker fits a cubic uniform B-spline
+For every coordinate component, TrajectorySplineReconstructor fits a cubic uniform B-spline
 
 ```text
 r(t) = sum_j c_j B_3(t - j)
@@ -106,7 +106,7 @@ The OpenGL window shows measured particle points, raw polylines, fitted splines,
 The project uses qmake, C++17, OpenGL, GLU, and GLUT.
 
 ```text
-qmake SplineMaker.pro
+qmake TrajectorySplineReconstructor.pro
 nmake
 ```
 
@@ -125,4 +125,4 @@ On Windows with the bundled 32-bit `glut32.lib`, build with an x86 MSVC develope
 
 ## Notes
 
-SplineMaker assumes monotonically ordered input snapshots and at least four samples for a trajectory to receive a valid cubic spline. Shorter tracks are loaded but skipped by spline rendering and optimization.
+TrajectorySplineReconstructor assumes monotonically ordered input snapshots and at least four samples for a trajectory to receive a valid cubic spline. Shorter tracks are loaded but skipped by spline rendering and optimization.

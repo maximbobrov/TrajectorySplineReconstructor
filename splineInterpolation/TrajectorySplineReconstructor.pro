@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = SplineMaker
+TARGET = TrajectorySplineReconstructor
 CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt

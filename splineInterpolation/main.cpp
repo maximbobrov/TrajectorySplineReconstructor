@@ -1564,7 +1564,7 @@ int main(int argc, char** argv)
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     glutInitWindowPosition(0,0);
-    glutCreateWindow("SplineMaker");
+    glutCreateWindow("TrajectorySplineReconstructor");
     glutDisplayFunc(renderFrame);
     glutMotionFunc(handleMouseDrag);
     glutMouseFunc(handleMouseButton);
